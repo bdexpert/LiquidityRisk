@@ -20,8 +20,6 @@ shinyUI(pageWithSidebar(
   mainPanel(
     tabsetPanel(
       tabPanel("Bond Illiquidity",
-        h3('Bond Illiquidity'),
-        selectInput(inputId = "factor", label = "Select a Liquidity Factor: ",  choices = c('None', 'billiq','amihud'), selected = 'None'),
         h3('ETF'),
         selectInput(inputId = "etf", label = "Select an ETF: ",  choices = c('None','LQD','HYG','CSJ' ,'CFT' ,'CIU' ,'AGG' ,'GBF' ,'GVI' ,'MBB' ,'EMB', 'IVV'), selected = 'None'),
         submitButton('Submit'),
@@ -30,14 +28,16 @@ shinyUI(pageWithSidebar(
       ),
 
       tabPanel("Stock Illiquidity", 
-        h3('Stock Illiquidity'),
-        selectInput(inputId = "factor", label = "Select a Liquidity Factor: ",  choices = c('None', 'billiq','amihud'), selected = 'None'),
         h3('Stock'),
-        selectInput(inputId = "etf", label = "Select an ETF: ",  choices = c('None','LQD','HYG','CSJ' ,'CFT' ,'CIU' ,'AGG' ,'GBF' ,'GVI' ,'MBB' ,'EMB', 'IVV'), selected = 'None'),
+        textInput(inputId = "stock", label = "Select a Stock: "),
         submitButton('Submit'),
-        verbatimTextOutput("results")          ),       
+        verbatimTextOutput("stockresults")          ),       
       
-      tabPanel("RUNS")
+      tabPanel("RUNS",
+        h3('Stock RUNS'),
+        textInput(inputId = "stockruns", label = "Select a Stock: "),
+        submitButton('Submit'),
+        verbatimTextOutput("runsresults")          )
   )
 ))
 )

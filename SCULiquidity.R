@@ -1,4 +1,6 @@
 
+library(quantmod)
+
 billiq = function(etf_sym) 
   {
   if(etf_sym == "LQD")
@@ -47,11 +49,6 @@ billiq = function(etf_sym)
   }
   
   NAVtext = text[setdiff(seq(1,length(text)),grep("<",text))]
-#  text = text[setdiff(seq(1,length(text)),grep(">",text))]
-#  text = text[setdiff(seq(1,length(text)),grep("]",text))]
-#  text = text[setdiff(seq(1,length(text)),grep("}",text))]
-#  text = text[setdiff(seq(1,length(text)),grep("_",text))]
-#  text = text[setdiff(seq(1,length(text)),grep("\\/",text))]
   vNAV = grep("NAV", NAVtext)
   NAV = as.numeric(sub("\\$", "", NAVtext[vNAV[1] - 1]))
   vETF = grep("Mid-Point Price", text)
@@ -59,16 +56,55 @@ billiq = function(etf_sym)
 
   return(-10000 * log(NAV / (NAV + (ETF-NAV))))
 }
-library(quantmod)
+
 amihud = function(ticker)
 {
-#ticker = "GOOG"
-getSymbols(ticker)
-df = get(ticker)
-sp = tail(df[,6],21)
-rets = diff(log(sp))
-vol = tail(df[,5], 20)
-A_illiq = mean(abs(rets)/vol)*1000000
-return (A_illiq)
+  getSymbols(ticker)
+  df = get(ticker)
+  sp = tail(df[,6],21)
+  rets = diff(log(sp))
+  vol = tail(df[,5], 20)
+  A_illiq = mean(abs(rets)/vol)*1000000
+  return (A_illiq)
 }
+
+# RUNLENGTH(X)
+# Compute run lengths of positive and negative episodes
+# in a vector of values ranging from (-\infty,+\infty).
+# June 8, 2009
+
+runlength = function(x) {
+  freq = matrix(0,100,1) 
+  n = length(x)
+  
+  s = sign(x[1])
+  xsum = x[1]
+  len = 1
+  maxrun = 1
+  maxsum = -999; 
+  minsum = +999; 
+  for (i in 2:n) {
+    xsum = xsum + x[i]
+    if (xsum > maxsum) {maxsum = xsum}
+    if (xsum < minsum) {minsum = xsum}
+    if (sign(x[i])==s) { len = len + 1 }
+    else {
+      if (len > maxrun) { maxrun = len }
+      freq[len] = freq[len] + 1
+      s = sign(x[i])    
+      len = 1	
+    }
+  }
+  u = freq[1:maxrun]
+  #print(u)
+  lengths = as.matrix(1:maxrun)
+  avg_rlength = sum(lengths * u)/sum(u)
+  minmaxdiff = maxsum - minsum
+  returnvals = c(avg_rlength,minmaxdiff,maxsum,minsum)
+}
+
+
+#x = rnorm(20)
+#print(runlength(x))
+
 
